@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soluciones SAP a AWS S3 para Retail - Guía Completa con CDC y Licenciamiento</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .tech-icon { transition: transform 0.3s ease; }
+        .tech-icon:hover { transform: scale(1.1); }
+         {
+            body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Header -->
+<header class="gradient-bg text-white py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-database mr-3"></i>Soluciones SAP a AWS S3 para Retail
+                </h1>
+                <p class="text-xl opacity-90">Guía Completa: CDC, Licenciamiento y Arquitecturas Compliance</p>
+            </div>
+            <div class="text-right">
+                <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                    <i class="fas fa-store text-3xl mb-2"></i>
+                    <p class="font-semibold">Enterprise Retail</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Resumen Ejecutivo -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-chart-line text-blue-600 mr-3"></i>Resumen Ejecutivo
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-blue-50 p-6 rounded-lg">
+                <i class="fas fa-sync-alt text-blue-600 text-2xl mb-3"></i>
+                <h3 class="font-bold text-lg mb-2">Change Data Capture</h3>
+                <p class="text-sm">SAP ofrece CDC nativo a través de ODP, SLT y Data Services con restricciones de licenciamiento específicas.</p>
+            </div>
+            <div class="bg-yellow-50 p-6 rounded-lg">
+                <i class="fas fa-gavel text-yellow-600 text-2xl mb-3"></i>
+                <h3 class="font-bold text-lg mb-2">Licenciamiento Crítico</h3>
+                <p class="text-sm">Acceso indirecto puede generar costos adicionales. Uso de ODP y OData es la ruta más segura.</p>
+            </div>
+            <div class="bg-green-50 p-6 rounded-lg">
+                <i class="fas fa-dollar-sign text-green-600 text-2xl mb-3"></i>
+                <h3 class="font-bold text-lg mb-2">Inversión Estimada</h3>
+                <p class="text-sm">Consultoría: $75-300/hora. Implementación: $250K-2M+ según complejidad y alcance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CDC y Capacidades Técnicas -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-cogs text-purple-600 mr-3"></i>Change Data Capture (CDC) en SAP
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-purple-700">Métodos CDC Nativos de SAP</h3>
+                <div class="space-y-4">
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h4 class="font-bold text-green-700">ODP (Operational Data Provider)</h4>
+                        <p class="text-sm text-gray-600">Método recomendado por SAP. Soporta CDC para la mayoría de tablas. Compatible con licenciamiento.</p>
+                        <div class="mt-2">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Recomendado</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Tiempo Real</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h4 class="font-bold text-blue-700">SAP SLT (System Landscape Transformation)</h4>
+                        <p class="text-sm text-gray-600">Replicación en tiempo real basada en triggers. Requiere licencia específica.</p>
+                        <div class="mt-2">
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Licencia Requerida</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Tiempo Real</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-l-4 border-indigo-500 pl-4">
+                        <h4 class="font-bold text-indigo-700">SAP Data Services (BODS)</h4>
+                        <p class="text-sm text-gray-600">CDC basado en timestamp, log-based CDC y source-based CDC. Herramienta ETL completa.</p>
+                        <div class="mt-2">
+                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">ETL Completo</span>
+                            <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">Batch/Near RT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-purple-700">Limitaciones y Consideraciones</h3>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-bold text-red-700 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Restricciones RFC
+                    </h4>
+                    <p class="text-sm text-red-600">SAP ha prohibido el uso de RFC para extracción de datos por herramientas de terceros (excepto aplicaciones internas de SAP).</p>
+                </div>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-bold text-yellow-700 mb-2">
+                        <i class="fas fa-database mr-2"></i>Acceso Directo a BD
+                    </h4>
+                    <p class="text-sm text-yellow-600">El acceso directo a la base de datos puede violar las licencias de SAP y generar costos de acceso indirecto.</p>
+                </div>
+                
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="font-bold text-green-700 mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>Rutas Seguras
+                    </h4>
+                    <ul class="text-sm text-green-600 space-y-1">
+                        <li>• ODP (Operational Data Provider)</li>
+                        <li>• OData Services</li>
+                        <li>• CDS Views (Core Data Services)</li>
+                        <li>• SAP-approved connectors</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Licenciamiento SAP -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-balance-scale text-red-600 mr-3"></i>Licenciamiento SAP y Acceso Indirecto
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-red-700">Riesgos de Licenciamiento Indirecto</h3>
+                
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                    <h4 class="font-bold text-red-700 mb-2">¿Qué es el Acceso Indirecto?</h4>
+                    <p class="text-sm text-red-600 mb-3">Cuando sistemas o usuarios no-SAP acceden a datos o funcionalidades de SAP sin tener licencias Named User apropiadas.</p>
+                    <div class="text-xs text-red-500">
+                        <strong>Ejemplos que generan costos:</strong>
+                        <ul class="mt-1 ml-4">
+                            <li>• Aplicaciones web que consultan SAP</li>
+                            <li>• APIs que exponen datos SAP</li>
+                            <li>• Herramientas ETL accediendo directamente a BD</li>
+                            <li>• Dashboards que muestran data SAP</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h4 class="font-semibold text-gray-700 mb-3">Modelos de Licenciamiento para Acceso Indirecto</h4>
+                <div class="space-y-3">
+                    <div class="border border-gray-200 rounded p-3">
+                        <h5 class="font-bold text-sm">Named User Licensing</h5>
+                        <p class="text-xs text-gray-600">Cada usuario individual requiere licencia SAP ($1,500-15,000/año)</p>
+                    </div>
+                    <div class="border border-gray-200 rounded p-3">
+                        <h5 class="font-bold text-sm">Digital Access Licensing</h5>
+                        <p class="text-xs text-gray-600">Licencia por documento/transacción procesada (~$10-50 por documento)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-green-700">Estrategias de Compliance</h3>
+                
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-bold text-green-700 mb-2">
+                        <i class="fas fa-shield-alt mr-2"></i>Rutas Aprobadas por SAP
+                    </h4>
+                    <ul class="text-sm text-green-600 space-y-2">
+                        <li><strong>ODP (Operational Data Provider):</strong> Interface oficial para extracción de datos</li>
+                        <li><strong>OData Services:</strong> APIs REST nativas de SAP</li>
+                        <li><strong>CDS Views:</strong> Vistas de datos certificadas</li>
+                        <li><strong>SAP-certified Connectors:</strong> Herramientas pre-aprobadas</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-bold text-blue-700 mb-2">
+                        <i class="fas fa-cloud mr-2"></i>RISE with SAP
+                    </h4>
+                    <p class="text-sm text-blue-600">El modelo RISE incluye ciertos derechos de acceso indirecto, pero requiere gestión cuidadosa de los límites.</p>
+                </div>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-700 mb-2">
+                        <i class="fas fa-handshake mr-2"></i>Negociación Proactiva
+                    </h4>
+                    <p class="text-sm text-yellow-600">Involucrar a SAP desde el diseño del proyecto para acordar modelos de licenciamiento antes de la implementación.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Costos y Presupuesto -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-calculator text-green-600 mr-3"></i>Análisis de Costos y Presupuesto
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-green-700">Servicios Profesionales SAP</h3>
+                <div style="height: 400px;" class="mb-4">
+                    <canvas id="consultingCostsChart"></canvas>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold mb-2">Factores que Afectan el Costo:</h4>
+                    <ul class="text-sm space-y-1">
+                        <li>• <strong>Complejidad técnica:</strong> +50-100% sobre tarifa base</li>
+                        <li>• <strong>Urgencia del proyecto:</strong> +25-50%</li>
+                        <li>• <strong>Ubicación geográfica:</strong> Variación ±30%</li>
+                        <li>• <strong>Certificaciones especiales:</strong> +20-40%</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-green-700">Estimación de Proyectos por Tamaño</h3>
+                
+                <div class="space-y-4">
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-green-600">Proyecto Pequeño</h4>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">$50K - $200K</span>
+                        </div>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• 5-15 tablas SAP</li>
+                            <li>• Replicación batch diaria</li>
+                            <li>• 2-4 meses implementación</li>
+                            <li>• 1-2 consultores</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-yellow-600">Proyecto Mediano</h4>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">$200K - $800K</span>
+                        </div>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• 15-50 tablas SAP</li>
+                            <li>• CDC near real-time</li>
+                            <li>• 4-8 meses implementación</li>
+                            <li>• 3-5 consultores especializados</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-red-600">Proyecto Grande</h4>
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">$800K - $3M+</span>
+                        </div>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• 50+ tablas, múltiples módulos</li>
+                            <li>• Real-time streaming</li>
+                            <li>• 8-18 meses implementación</li>
+                            <li>• Equipo completo (5-10 personas)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-blue-700 mb-4">
+                <i class="fas fa-lightbulb mr-2"></i>Estrategias de Optimización de Costos
+            </h3>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                    <h4 class="font-semibold text-sm mb-2">Fase 1: Preparación</h4>
+                    <ul class="text-xs space-y-1">
+                        <li>• Capacitación interna previa</li>
+                        <li>• Documentación detallada</li>
+                        <li>• Ambientes de prueba listos</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-sm mb-2">Fase 2: Implementación</h4>
+                    <ul class="text-xs space-y-1">
+                        <li>• Enfoque iterativo</li>
+                        <li>• Transferencia de conocimiento</li>
+                        <li>• Automatización desde día 1</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-sm mb-2">Fase 3: Soporte</h4>
+                    <ul class="text-xs space-y-1">
+                        <li>• Equipo interno capacitado</li>
+                        <li>• Soporte por incidentes</li>
+                        <li>• Mantenimiento predictivo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Arquitecturas de Solución -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-sitemap text-indigo-600 mr-3"></i>Arquitecturas de Solución Recomendadas
+        </h2>
+        
+        <div class="space-y-8">
+            <!-- Arquitectura 1: ODP + AWS Glue -->
+            <div class="border border-gray-200 rounded-lg p-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-green-100 rounded-full p-2 mr-3">
+                        <i class="fas fa-star text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-green-700">Arquitectura 1: ODP + AWS Glue (Recomendado)</h3>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-4">
+                    <div class="text-center">
+                        <div class="bg-blue-50 rounded-lg p-4 mb-2">
+                            <i class="fas fa-database text-blue-600 text-2xl"></i>
+                            <h4 class="font-semibold mt-2">SAP ODP</h4>
+                        </div>
+                        <p class="text-sm text-gray-600">Extracción nativa con CDC</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="flex items-center justify-center mb-2">
+                            <i class="fas fa-arrow-right text-gray-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-orange-50 rounded-lg p-4 mb-2">
+                            <i class="fab fa-aws text-orange-600 text-2xl"></i>
+                            <h4 class="font-semibold mt-2">AWS Glue + S3</h4>
+                        </div>
+                        <p class="text-sm text-gray-600">ETL serverless</p>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-semibold text-green-700 mb-2">Ventajas</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Compliance total con SAP</li>
+                                <li>• CDC nativo incluido</li>
+                                <li>• Costos predecibles</li>
+                                <li>• Escalabilidad automática</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-green-700 mb-2">Casos de Uso Ideales</h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Datos maestros (productos, clientes)</li>
+                                <li>• Transacciones de venta</li>
+                                <li>• Inventario y logística</li>
+                                <li>• Reporting y analytics</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Arquitectura 2: SLT + Kinesis -->
+            <div class="border border-gray-200 rounded-lg p-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-100 rounded-full p-2 mr-3">
+                        <i class="fas fa-bolt text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-700">Arquitectura 2: SAP SLT + Amazon Kinesis</h3>
+                </div>
+                
+                <div class="grid md:grid-cols-4 gap-4 mb-4">
+                    <div class="text-center">
+                        <div class="bg-red-50 rounded-lg p-3">
+                            <i class="fas fa-server text-red-600 text-xl"></i>
+                            <h5 class="font-semibold mt-2 text-sm">SAP SLT</h5>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-purple-50 rounded-lg p-3">
+                            <i class="fas fa-stream text-purple-600 text-xl"></i>
+                            <h5 class="font-semibold mt-2 text-sm">Kinesis</h5>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-green-50 rounded-lg p-3">
+                            <i class="fas fa-lambda text-green-600 text-xl"></i>
+                            <h5 class="font-semibold mt-2 text-sm">Lambda</h5>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-orange-50 rounded-lg p-3">
+                            <i class="fas fa-cloud text-orange-600 text-xl"></i>
+                            <h5 class="font-semibold mt-2 text-sm">S3</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                    <h4 class="font-semibold text-yellow-700 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Consideración Importante
+                    </h4>
+                    <p class="text-sm text-yellow-600">SAP SLT requiere licencia adicional (~$50K-100K). Ideal solo para casos de uso que requieren latencia ultra-baja (&lt;1 segundo).</p>
+                </div>
+            </div>
+            
+            <!-- Arquitectura 3: Híbrida -->
+            <div class="border border-gray-200 rounded-lg p-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-purple-100 rounded-full p-2 mr-3">
+                        <i class="fas fa-puzzle-piece text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-purple-700">Arquitectura 3: Híbrida Multi-Método</h3>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3">Datos Transaccionales (Tiempo Real)</h4>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="text-sm mb-2"><strong>Método:</strong> ODP + Kinesis</p>
+                            <p class="text-sm mb-2"><strong>Frecuencia:</strong> &lt; 5 minutos</p>
+                            <p class="text-sm"><strong>Tablas:</strong> VBAK, VBAP, MARA, MARD</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3">Datos Maestros (Batch)</h4>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="text-sm mb-2"><strong>Método:</strong> AWS Glue</p>
+                            <p class="text-sm mb-2"><strong>Frecuencia:</strong> Diario/Semanal</p>
+                            <p class="text-sm"><strong>Tablas:</strong> KNA1, LFA1, T001</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Herramientas y Proveedores -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-tools text-blue-600 mr-3"></i>Herramientas y Proveedores Especializados
+        </h2>
+        
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <!-- SAP Native -->
+            <div class="border border-gray-200 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4 text-blue-700">
+                    <i class="fab fa-sap text-blue-600 mr-2"></i>Soluciones SAP Nativas
+                </h3>
+                <div class="space-y-3">
+                    <div class="bg-green-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">SAP Data Services</h4>
+                        <p class="text-xs text-gray-600">ETL completo con CDC. $100K-300K licencia</p>
+                        <div class="mt-1">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Oficial</span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">SAP SLT</h4>
+                        <p class="text-xs text-gray-600">Replicación tiempo real. $50K-100K</p>
+                        <div class="mt-1">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Tiempo Real</span>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">SAP Cloud Connector</h4>
+                        <p class="text-xs text-gray-600">Conectividad híbrida segura. Incluido</p>
+                        <div class="mt-1">
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">Gratuito</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AWS Native -->
+            <div class="border border-gray-200 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4 text-orange-700">
+                    <i class="fab fa-aws text-orange-600 mr-2"></i>Servicios AWS
+                </h3>
+                <div class="space-y-3">
+                    <div class="bg-orange-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">AWS Glue</h4>
+                        <p class="text-xs text-gray-600">ETL serverless. Pay-per-use (~$0.44/DPU-hour)</p>
+                        <div class="mt-1">
+                            <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Serverless</span>
+                        </div>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">AWS DMS</h4>
+                        <p class="text-xs text-gray-600">Migración de BD. $0.19-1.83/hora según instancia</p>
+                        <div class="mt-1">
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Migración</span>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">Amazon Kinesis</h4>
+                        <p class="text-xs text-gray-600">Streaming real-time. $0.015/shard-hour</p>
+                        <div class="mt-1">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Streaming</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Third Party -->
+            <div class="border border-gray-200 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4 text-purple-700">
+                    <i class="fas fa-handshake text-purple-600 mr-2"></i>Soluciones Certificadas
+                </h3>
+                <div class="space-y-3">
+                    <div class="bg-indigo-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">BryteFlow</h4>
+                        <p class="text-xs text-gray-600">CDC especializado SAP. $50K-200K/año</p>
+                        <div class="mt-1">
+                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">SAP Certified</span>
+                        </div>
+                    </div>
+                    <div class="bg-cyan-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">Fivetran</h4>
+                        <p class="text-xs text-gray-600">SaaS ETL. $120-500/mes por conector</p>
+                        <div class="mt-1">
+                            <span class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded text-xs">SaaS</span>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-50 p-3 rounded">
+                        <h4 class="font-semibold text-sm">Theobald Software</h4>
+                        <p class="text-xs text-gray-600">Conectores SAP especializados. €8K-25K</p>
+                        <div class="mt-1">
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">On-Premise</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Casos de Uso Retail -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-shopping-cart text-pink-600 mr-3"></i>Casos de Uso Específicos para Retail
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-pink-700">Operaciones Críticas</h3>
+                
+                <div class="space-y-4">
+                    <div class="border-l-4 border-red-500 pl-4 bg-red-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-red-700">Gestión de Inventario en Tiempo Real</h4>
+                        <p class="text-sm text-red-600 mb-2">CDC cada 30 segundos para tablas MARD, MCHB</p>
+                        <div class="text-xs text-red-500">
+                            <strong>Impacto:</strong> Evitar roturas de stock, optimizar reposición
+                        </div>
+                    </div>
+                    
+                    <div class="border-l-4 border-blue-500 pl-4 bg-blue-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-blue-700">Análisis de Ventas Cross-Channel</h4>
+                        <p class="text-sm text-blue-600 mb-2">Integración VBAK, VBAP con datos e-commerce</p>
+                        <div class="text-xs text-blue-500">
+                            <strong>Impacto:</strong> Vista 360° del cliente, personalización
+                        </div>
+                    </div>
+                    
+                    <div class="border-l-4 border-green-500 pl-4 bg-green-50 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-green-700">Pricing Dinámico</h4>
+                        <p class="text-sm text-green-600 mb-2">Sincronización A304, KONP con ML engines</p>
+                        <div class="text-xs text-green-500">
+                            <strong>Impacto:</strong> Optimización automática de precios
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-pink-700">Analytics y Reporting</h3>
+                
+                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                    <h4 class="font-semibold mb-3">Tablas SAP Críticas para Retail</h4>
+                    <div style="height: 300px;">
+                        <canvas id="sapTablesChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="bg-purple-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-purple-700">Supply Chain Analytics</h4>
+                        <p class="text-sm text-purple-600">EKKO, EKPO, LIPS → Análisis de proveedores y logística</p>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-indigo-700">Customer Analytics</h4>
+                        <p class="text-sm text-indigo-600">KNA1, KNVV → Segmentación y análisis de comportamiento</p>
+                    </div>
+                    <div class="bg-cyan-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-cyan-700">Financial Reporting</h4>
+                        <p class="text-sm text-cyan-600">BSEG, BKPF → Análisis financiero y compliance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Implementación y Best Practices -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-rocket text-indigo-600 mr-3"></i>Plan de Implementación y Mejores Prácticas
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-indigo-700">Fases de Implementación</h3>
+                
+                <div class="space-y-4">
+                    <div class="relative">
+                        <div class="flex items-center mb-2">
+                            <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</div>
+                            <h4 class="font-semibold text-blue-700">Análisis y Diseño (4-6 semanas)</h4>
+                        </div>
+                        <div class="ml-11 text-sm text-gray-600">
+                            <ul class="space-y-1">
+                                <li>• Audit de licenciamiento SAP actual</li>
+                                <li>• Identificación de tablas críticas</li>
+                                <li>• Diseño de arquitectura AWS</li>
+                                <li>• Estimación de costos detallada</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <div class="flex items-center mb-2">
+                            <div class="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</div>
+                            <h4 class="font-semibold text-green-700">Proof of Concept (2-3 semanas)</h4>
+                        </div>
+                        <div class="ml-11 text-sm text-gray-600">
+                            <ul class="space-y-1">
+                                <li>• Configuración ODP para 3-5 tablas</li>
+                                <li>• Setup AWS Glue + S3</li>
+                                <li>• Validación de CDC</li>
+                                <li>• Pruebas de rendimiento iniciales</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <div class="flex items-center mb-2">
+                            <div class="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">3</div>
+                            <h4 class="font-semibold text-purple-700">Implementación Piloto (6-8 semanas)</h4>
+                        </div>
+                        <div class="ml-11 text-sm text-gray-600">
+                            <ul class="space-y-1">
+                                <li>• 15-25 tablas en producción</li>
+                                <li>• Monitoreo y alertas</li>
+                                <li>• Documentación y capacitación</li>
+                                <li>• Optimización de performance</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <div class="flex items-center mb-2">
+                            <div class="bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">4</div>
+                            <h4 class="font-semibold text-red-700">Rollout Completo (8-12 semanas)</h4>
+                        </div>
+                        <div class="ml-11 text-sm text-gray-600">
+                            <ul class="space-y-1">
+                                <li>• Migración de todas las tablas</li>
+                                <li>• Integración con analytics tools</li>
+                                <li>• Automatización completa</li>
+                                <li>• Knowledge transfer final</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-indigo-700">Mejores Prácticas de Seguridad</h3>
+                
+                <div class="space-y-4">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4">
+                        <h4 class="font-bold text-red-700 mb-2">
+                            <i class="fas fa-shield-alt mr-2"></i>Encriptación End-to-End
+                        </h4>
+                        <ul class="text-sm text-red-600 space-y-1">
+                            <li>• TLS 1.3 para datos en tránsito</li>
+                            <li>• AES-256 para datos en reposo (S3)</li>
+                            <li>• AWS KMS para gestión de claves</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                        <h4 class="font-bold text-blue-700 mb-2">
+                            <i class="fas fa-user-lock mr-2"></i>Control de Acceso
+                        </h4>
+                        <ul class="text-sm text-blue-600 space-y-1">
+                            <li>• IAM roles con principio de menor privilegio</li>
+                            <li>• MFA obligatorio para administradores</li>
+                            <li>• Auditoría con AWS CloudTrail</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4">
+                        <h4 class="font-bold text-green-700 mb-2">
+                            <i class="fas fa-eye mr-2"></i>Monitoreo y Compliance
+                        </h4>
+                        <ul class="text-sm text-green-600 space-y-1">
+                            <li>• CloudWatch para métricas en tiempo real</li>
+                            <li>• Data lineage y cataloging</li>
+                            <li>• Compliance GDPR/CCPA automático</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-700 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Checklist Pre-Go-Live
+                    </h4>
+                    <div class="grid grid-cols-1 gap-2 text-sm">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" disabled>
+                            <span>Acuerdo de licenciamiento SAP firmado</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" disabled>
+                            <span>Backup y rollback procedures validados</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" disabled>
+                            <span>Load testing completado</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" disabled>
+                            <span>Runbooks de soporte documentados</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" disabled>
+                            <span>Team training completado</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ROI y KPIs -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-chart-bar text-green-600 mr-3"></i>ROI y Métricas de Éxito
+        </h2>
+        
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-green-700 mb-4">Beneficios Cuantificables</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Reducción tiempo reports</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">70-90%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Mejora precisión inventario</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">15-25%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Reducción out-of-stocks</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">20-35%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Optimización pricing</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">2-5%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-blue-700 mb-4">KPIs Técnicos</h3>
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-sm font-medium">Latencia CDC</span>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 95%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">&lt; 2 minutos target</span>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium">Uptime SLA</span>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                            <div class="bg-green-600 h-2 rounded-full" style="width: 99.9%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">99.9% target</span>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium">Data Quality</span>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                            <div class="bg-purple-600 h-2 rounded-full" style="width: 98%;"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">98%+ accuracy</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-yellow-700 mb-4">Cálculo ROI</h3>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-yellow-600 mb-2">18-24</div>
+                    <div class="text-sm text-yellow-600 mb-4">meses payback típico</div>
+                </div>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between">
+                        <span>Inversión inicial:</span>
+                        <span class="font-semibold">$500K-1.5M</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Ahorros anuales:</span>
+                        <span class="font-semibold">$300K-900K</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>ROI a 3 años:</span>
+                        <span class="font-semibold text-green-600">150-300%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Conclusiones y Próximos Pasos -->
+<section class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg card-shadow p-8 mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">
+            <i class="fas fa-flag-checkered text-purple-600 mr-3"></i>Conclusiones y Recomendaciones
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-purple-700">Recomendaciones Estratégicas</h3>
+                
+                <div class="space-y-4">
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4">
+                        <h4 class="font-bold text-green-700 mb-2">1. Comenzar con ODP + AWS Glue</h4>
+                        <p class="text-sm text-green-600">La combinación más segura desde perspectiva de licenciamiento y con menor riesgo técnico.</p>
+                    </div>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                        <h4 class="font-bold text-blue-700 mb-2">2. Implementación Iterativa</h4>
+                        <p class="text-sm text-blue-600">Iniciar con casos de uso críticos y expandir gradualmente para minimizar riesgo y acelerar time-to-value.</p>
+                    </div>
+                    
+                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                        <h4 class="font-bold text-yellow-700 mb-2">3. Involucrar SAP Licensing Temprano</h4>
+                        <p class="text-sm text-yellow-600">Negociar términos de acceso indirecto antes de la implementación para evitar sorpresas costosas.</p>
+                    </div>
+                    
+                    <div class="bg-purple-50 border-l-4 border-purple-500 p-4">
+                        <h4 class="font-bold text-purple-700 mb-2">4. Invertir en Capacitación</h4>
+                        <p class="text-sm text-purple-600">Desarrollar capacidades internas para reducir dependencia de consultores externos a largo plazo.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-purple-700">Próximos Pasos Inmediatos</h3>
+                
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h4 class="font-semibold mb-4">Cronograma de Acción (30-60-90 días)</h4>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h5 class="font-semibold text-sm text-blue-600 mb-2">Primeros 30 días</h5>
+                            <ul class="text-xs text-gray-600 space-y-1">
+                                <li>• Audit completo de licencias SAP actuales</li>
+                                <li>• Identificación de 10-15 tablas prioritarias</li>
+                                <li>• Selección de consultores especializados</li>
+                                <li>• Setup de ambiente AWS inicial</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h5 class="font-semibold text-sm text-green-600 mb-2">30-60 días</h5>
+                            <ul class="text-xs text-gray-600 space-y-1">
+                                <li>• Negociación de términos con SAP</li>
+                                <li>• Diseño detallado de arquitectura</li>
+                                <li>• Configuración ODP en ambiente de desarrollo</li>
+                                <li>• Proof of concept con 3-5 tablas</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h5 class="font-semibold text-sm text-purple-600 mb-2">60-90 días</h5>
+                            <ul class="text-xs text-gray-600 space-y-1">
+                                <li>• Implementación piloto en producción</li>
+                                <li>• Validación de CDC y performance</li>
+                                <li>• Capacitación de equipo interno</li>
+                                <li>• Plan detallado para rollout completo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                    <h4 class="font-bold text-indigo-700 mb-2">
+                        <i class="fas fa-users mr-2"></i>Equipo Recomendado
+                    </h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>• SAP Architect (Senior)</div>
+                        <div>• AWS Solutions Architect</div>
+                        <div>• Data Engineer (CDC)</div>
+                        <div>• SAP Licensing Specialist</div>
+                        <div>• DevOps Engineer</div>
+                        <div>• Project Manager</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="gradient-bg text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <div class="mb-4">
+            <i class="fas fa-database text-3xl mb-2"></i>
+            <h3 class="text-xl font-bold">Soluciones SAP a AWS S3 para Retail</h3>
+        </div>
+        <p class="text-sm opacity-90 mb-4">
+            Guía integral incluyendo Change Data Capture, licenciamiento SAP y mejores prácticas para implementación enterprise
+        </p>
+        <div class="text-xs opacity-75">
+            <p>Documento técnico • Optimizado para retail de gran escala • Compliance SAP garantizado</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+// Chart.js - Consulting Costs
+const ctx1 = document.getElementById('consultingCostsChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: ['Junior', 'Mid-Level', 'Senior', 'Expert/Architect', 'Project Manager'],
+        datasets: [{
+            label: 'Costo por Hora (USD)',
+            data: [75, 125, 200, 300, 180],
+            backgroundColor: [
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(16, 185, 129, 0.8)',  
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(139, 92, 246, 0.8)'
+            ],
+            borderColor: [
+                'rgba(59, 130, 246, 1)',
+                'rgba(16, 185, 129, 1)',
+                'rgba(245, 158, 11, 1)',
+                'rgba(239, 68, 68, 1)',
+                'rgba(139, 92, 246, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'USD/Hora'
+                }
+            }
+        }
+    }
+});
+
+// Chart.js - SAP Tables Priority
+const ctx2 = document.getElementById('sapTablesChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: ['Ventas (VBAK/VBAP)', 'Inventario (MARD)', 'Clientes (KNA1)', 'Productos (MARA)', 'Compras (EKKO)', 'Otros'],
+        datasets: [{
+            data: [25, 20, 15, 15, 10, 15],
+            backgroundColor: [
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(139, 92, 246, 0.8)',
+                'rgba(107, 114, 128, 0.8)'
+            ],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    fontSize: 10,
+                    usePointStyle: true
+                }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgPUey2cUScvM6K5tuVbnqbnyCsDAU6r6QyNLW3qRrQHvegg4A%2FCB2%2FgeHfUBRCi6vGQi3VuVizpkVbHyVAHL%2FRq5qwxl02CJoRVsLoPVDHObVdTl4HNwQ23mNCVy8Mn4iBIPU6VzF38Kf%2FIETwEWB2E0ws7TUsgrq3XjrZuVfWxmEU8%2B322OjMKIZmskCGCQXsUEUstgX79vRFi24n3fWqDe5pnt1BgXrjjRxPEqy8SMGJ8mOMYgPGYePNFLopxRtegN0YFPsrVq%2Fx2Ti5wd9mKcY1BoXogSW6NzESAe%2F1Ptx7HL75XXSrXGr0pg6r2%2FjxK94S9nTQ0DybKMmlJr86sbf%2FazkIpFXL5VsBxUzAzfxVL0ZKlB0lMXU9mDl8HbRO46dPeJvbxsxjufChRFmfDYhhzSOxIxxIN2s%2FOAc0Pvis70490HGnvQDG75SUVUm6bDu%2Bj3ANu4PDVS2q9W14UrDAXt4O%2FgRAsnvmbPxCEQraAhkzs3uKNoZtKQbV8qdGOKw8fY0F0PU%2BzuoFCUSQ%3D";
+        window.__genspark_locale = "es-ES";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgPUey2cUScvM6K5tuVbnqbnyCsDAU6r6QyNLW3qRrQHvegg4A/CB2/geHfUBRCi6vGQi3VuVizpkVbHyVAHL/Rq5qwxl02CJoRVsLoPVDHObVdTl4HNwQ23mNCVy8Mn4iBIPU6VzF38Kf/IETwEWB2E0ws7TUsgrq3XjrZuVfWxmEU8+322OjMKIZmskCGCQXsUEUstgX79vRFi24n3fWqDe5pnt1BgXrjjRxPEqy8SMGJ8mOMYgPGYePNFLopxRtegN0YFPsrVq/x2Ti5wd9mKcY1BoXogSW6NzESAe/1Ptx7HL75XXSrXGr0pg6r2/jxK94S9nTQ0DybKMmlJr86sbf/azkIpFXL5VsBxUzAzfxVL0ZKlB0lMXU9mDl8HbRO46dPeJvbxsxjufChRFmfDYhhzSOxIxxIN2s/OAc0Pvis70490HGnvQDG75SUVUm6bDu+j3ANu4PDVS2q9W14UrDAXt4O/gRAsnvmbPxCEQraAhkzs3uKNoZtKQbV8qdGOKw8fY0F0PU+zuoFCUSQ=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    
